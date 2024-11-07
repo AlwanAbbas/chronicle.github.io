@@ -10,8 +10,15 @@
     <div class="container mt-5">
         <h1>Notes</h1>
         
+        <!-- Display flash message -->
+        @if(session()->has('message'))
+            <div class="alert alert-success">
+                {{ session()->get('message') }}
+            </div>
+        @endif
+
         <!-- Search form -->
-        <form action="{{ route('notes.search') }}" method="GET" class="form-inline mb-3">
+        <form action="{{ url('/notes/search') }}" method="GET" class="form-inline mb-3">
             <input type="text" name="query" class="form-control mr-sm-2" placeholder="Search notes...">
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
@@ -47,4 +54,4 @@
         </table>
     </div>
 </body>
-</html>
+</html> 

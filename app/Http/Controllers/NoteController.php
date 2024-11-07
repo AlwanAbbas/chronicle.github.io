@@ -82,6 +82,8 @@ class NoteController extends Controller
         }
         $note->tags()->sync($tagIds);
 
+        session()->flash('message', 'Note updated successfully.');
+
         return redirect()->route('notes.index');
     }
 
@@ -93,16 +95,18 @@ class NoteController extends Controller
         }
 
         $note->delete();
+        session()->flash('message', 'Note deleted successfully.');
         return redirect()->route('notes.index');
     }
 
     public function search(Request $request)
     {
+        \Log::info('Search function accessed');
         $query = $request->input('query');
         $notes = Note::where('title', 'LIKE', "%{$query}%")
                     ->orWhere('content', 'LIKE', "%{$query}%")
                     ->get();
-    
+        \Log::info('Notes found: ', $notes->toArray());
         return view('notes.index', compact('notes'));
     }
     

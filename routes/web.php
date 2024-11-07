@@ -19,4 +19,5 @@ Route::get('/', function () {
 });
 
 Route::resource('notes', NoteController::class);
-Route::get('notes/search', [NoteController::class, 'search'])->name('notes.search');
+Route::get('/notes/search', [NoteController::class, 'search'])->name('notes.search');
+Route::get('/notes/search', [NoteController::class, 'index']);
