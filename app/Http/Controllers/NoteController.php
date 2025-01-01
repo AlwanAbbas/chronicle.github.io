@@ -14,7 +14,7 @@ class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Note::all();
+        $notes = Note::where('user_id', auth()->id())->paginate(10);
         return view('notes.index', compact('notes'));
     }
 
@@ -25,16 +25,27 @@ class NoteController extends Controller
 
     public function store(Request $request)
     {
-        // Simpan note baru
-        $note = Note::create($request->all());
-
-        // Proses penyimpanan file
+        // Menambahkan user_id dari pengguna yang sedang login
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            // Jika perlu, validasi input lain
+        ]);
+    
+        // Menambahkan user_id langsung ke data yang akan disimpan
+        $note = Note::create([
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'user_id' => auth()->id(),  // Menambahkan user_id yang diambil dari pengguna yang sedang login
+        ]);
+    
+        // Proses penyimpanan file jika ada
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('files');
             $note->file_path = $filePath;
             $note->save();
         }
-
+    
         // Pisahkan tags berdasarkan koma dan sinkronkan dengan note
         $tags = explode(',', $request->input('tags'));
         $tagIds = [];
@@ -42,10 +53,13 @@ class NoteController extends Controller
             $tag = Tag::firstOrCreate(['name' => trim($tagName)]);
             $tagIds[] = $tag->id;
         }
+    
+        // Menyinkronkan tag yang dipilih dengan catatan
         $note->tags()->sync($tagIds);
-
-        return redirect()->route('notes.index');
-    }
+    
+        // Redirect atau beri pesan flash
+        return redirect()->route('notes.index')->with('message', 'Catatan berhasil disimpan!');
+    }    
 
     public function show(Note $note)
     {

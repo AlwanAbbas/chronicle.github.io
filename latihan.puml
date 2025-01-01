@@ -1,0 +1,49 @@
+@startuml Chronicle
+
+class Pengguna {
+    + membuatCatatan()
+    + melihatCatatan()
+    + memperbaruiCatatan()
+    + menghapusCatatan()
+    + menambahkanTag()
+    + mengelolaTag()
+    + mengunggahBerkas()
+    + menghapusBerkas()
+}
+
+class Admin {
+    + melihatSemuaCatatan()
+    + menghapusCatatan()
+}
+
+class Catatan {
+    - id: int
+    - judul: string
+    - konten: string
+    - berkas: Berkas
+    + tambahTag(tag: Tag)
+    + hapusTag(tag: Tag)
+    + unggahBerkas(berkas: Berkas)
+    + hapusBerkas()
+}
+
+class Tag {
+    - nama: string
+    + setNama(nama: string)
+    + getNama(): string
+}
+
+class Berkas {
+    - namaFile: string
+    - ukuran: int
+    + getInfoBerkas(): string
+}
+
+Pengguna --> Catatan : "1..* PUSH/GET/DROP"
+Pengguna --> Tag : "1..* PUSH"
+Pengguna --> Berkas : "1..* PUSH/DROP"
+Admin --> Catatan : "1..* GET/DROP"
+Catatan --> Tag : "0..* PUSH"
+Catatan --> Berkas : "0..1 PUSH/DROP"
+
+@enduml

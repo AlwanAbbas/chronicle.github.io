@@ -1,0 +1,34 @@
+@startuml Notes Chronicle
+actor "Pengguna" as P
+actor "Admin" as A
+
+package "Note" {
+    usecase "Membuat Catatan" as UC1
+    usecase "Melihat Semua Catatan" as UC2
+    usecase "Memperbarui Catatan" as UC3
+    usecase "Menghapus Catatan" as UC4
+}
+
+package "Note Tag" {
+    usecase "Menambahkan Tag ke Catatan" as UC6
+    usecase "Mengelola Tag" as UC7
+}
+
+package "Edit Note" {
+    usecase "Mengunggah Berkas untuk Catatan" as UC8
+    usecase "Menghapus Berkas Terkait" as UC9
+}
+
+P --> UC1 : "Membuat Catatan (PUSH)"
+P --> UC2 : "Melihat Catatan (GET)"
+P --> UC3 : "Mengedit Catatan (PUSH)"
+P --> UC4 : "Menghapus Catatan (DROP)"
+P --> UC6 : "Menambahkan Tag (PUSH)"
+P --> UC7 : "Mengelola Tag (PUSH)"
+P --> UC8 : "Mengunggah Berkas (PUSH)"
+P --> UC9 : "Menghapus Berkas (DROP)"
+
+A --> UC2 : "Melihat Semua Catatan (GET)"
+A --> UC4 : "Menghapus Catatan (DROP)"
+
+@enduml

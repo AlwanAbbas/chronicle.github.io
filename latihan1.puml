@@ -1,0 +1,71 @@
+@startuml Chronicle
+
+package "User Management" {
+    class Pengguna {
+        + membuatCatatan()
+        + melihatCatatan()
+        + memperbaruiCatatan()
+        + menghapusCatatan()
+        + menambahkanTag()
+        + mengelolaTag()
+        + mengunggahBerkas()
+        + menghapusBerkas()
+    }
+    class Admin {
+        + melihatSemuaCatatan()
+        + menghapusCatatan()
+    }
+}
+
+package "Note Management" {
+    class Catatan {
+        - id: int
+        - judul: string
+        - konten: string
+        - berkas: Berkas
+        + tambahTag(tag: Tag)
+        + hapusTag(tag: Tag)
+        + unggahBerkas(berkas: Berkas)
+        + hapusBerkas()
+        + index()
+        + create()
+        + store(request: Request)
+        + show(note: Note)
+        + edit(note: Note)
+        + update(request: Request, note: Note)
+        + destroy(note: Note)
+        + search(request: Request)
+    }
+}
+
+package "Tag Management" {
+    class Tag {
+        - nama: string
+        + setNama(nama: string)
+        + getNama(): string
+        + index()
+        + create()
+        + store(request: Request)
+        + show(tag: Tag)
+        + edit(tag: Tag)
+        + update(request: Request, tag: Tag)
+        + destroy(tag: Tag)
+    }
+}
+
+package "File Management" {
+    class Berkas {
+        - namaFile: string
+        - ukuran: int
+        + getInfoBerkas(): string
+    }
+}
+
+Pengguna --> Catatan : "List<Catatan> PUSH/GET/DROP"
+Pengguna --> Tag : "List<Tag> PUSH"
+Pengguna --> Berkas : "List<Berkas> PUSH/DROP"
+Admin --> Catatan : "List<Catatan> GET/DROP"
+Catatan --> Tag : "List<Tag> PUSH"
+Catatan --> Berkas : "Optional<Berkas> PUSH/DROP"
+
+@enduml

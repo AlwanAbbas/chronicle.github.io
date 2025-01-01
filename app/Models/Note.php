@@ -13,11 +13,15 @@ class Note extends Model
         'title',
         'content',
         'file_path',
+        'user_id'
     ];
 
-    public function tags()
-    {
-    return $this->belongsToMany(Tag::class);
+    public function tags() {
+        return $this->belongsToMany(Tag::class);
     }
+    public function user() {
+        return $this->belongsTo(User::class); // Asumsi bahwa User adalah model yang mengelola data pengguna
+    }
+
 
 }
