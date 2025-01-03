@@ -11,19 +11,28 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="h3">Chronicle</h1>
-            
-            <!-- Auth buttons: Login or Logout -->
-            @if (Auth::check())  <!-- Check if user is logged in -->
-                <!-- Logout button -->
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to logout?')">
-                        Logout
+
+            <!-- Auth buttons: Login/Profile Dropdown -->
+            @if (Auth::check())
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ Auth::user()->name }}
                     </button>
-                </form>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <button type="button" class="dropdown-item text-danger" data-toggle="modal" data-target="#logoutModal">
+                            Logout
+                        </button>
+                    </div>
+                </div>
             @else
-                <!-- Login button -->
-                <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Login</a>
+                <!-- Login/Register buttons -->
+                <div>
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-success btn-sm">Register</a>
+                </div>
             @endif
         </div>
 
@@ -34,9 +43,37 @@
             </div>
         @endif
 
+        <!-- Form Pencarian Tags -->
+        <form action="{{ route('notes.index') }}" method="GET" class="mb-4">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="tag" 
+                    value="{{ request('tag') }}" 
+                    placeholder="Cari berdasarkan tag..."
+                    class="form-control"
+                >
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Reset pencarian jika filter tag diterapkan -->
+        @if(request('tag'))
+            <div class="alert alert-info">
+                <p>
+                    Hasil pencarian untuk tag: <strong>{{ request('tag') }}</strong>
+                </p>
+                <a href="{{ route('notes.index') }}" class="btn btn-sm btn-secondary">Reset Pencarian</a>
+            </div>
+        @endif
+
         <!-- Create Note button -->
-        @if (Auth::check()) <!-- Only show if user is logged in -->
+        @if (Auth::check())
             <a href="{{ route('notes.create') }}" class="btn btn-success mb-3">Buat Catatan</a>
+        @else
+            <div class="alert alert-warning">Please log in to create and manage notes.</div>
         @endif
 
         <!-- Notes table -->
@@ -54,7 +91,7 @@
                         <td><a href="{{ route('notes.show', $note) }}">{{ $note->title }}</a></td>
                         <td>
                             @foreach ($note->tags as $tag)
-                                <span class="badge badge-info">{{ $tag->name }}</span>
+                                <span class="badge badge-{{ $tag->color ?? 'info' }}">{{ $tag->name }}</span>
                             @endforeach
                         </td>
                         <td>
@@ -62,7 +99,10 @@
                             <form action="{{ route('notes.destroy', $note) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                                <button type="submit" id="deleteBtn" class="btn btn-danger btn-sm">
+                                    <span id="deleteSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    Delete
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -78,9 +118,38 @@
         <div class="mt-3">
             {{ $notes->links() }}
         </div>
+
+        <!-- Logout Modal -->
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-danger">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('deleteBtn').addEventListener('click', function () {
+            document.getElementById('deleteSpinner').classList.remove('d-none');
+        });
+    </script>
 </body>
 </html>

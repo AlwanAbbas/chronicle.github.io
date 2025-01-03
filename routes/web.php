@@ -25,6 +25,8 @@ Route::get('notes/create', [NoteController::class, 'create'])->name('notes.creat
 
 Route::get('notes', [NoteController::class, 'index'])->name('notes.index');
 
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
