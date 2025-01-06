@@ -1,0 +1,66 @@
+@startuml Chronicle
+start
+
+:User opens application;
+
+if (Is user logged in?) then (Yes)
+    :Redirect to Dashboard;
+else (No)
+    :User enters email & password;
+    if (Credentials valid?) then (Yes)
+        :Grant access;
+        :Redirect to Dashboard;
+    else (No)
+        :Show error message;
+        stop
+    endif
+endif
+
+partition User {
+    :User views notes;
+    if (Action required?) then (Yes)
+        switch (Action type)
+        case (Create note)
+            :Input note details;
+            :Send data to Controller;
+            :Save data to Database;
+        case (Edit note)
+            :Select note to edit;
+            :Update note details;
+            :Send update to Controller;
+            :Update data in Database;
+        case (Delete note)
+            :Select note to delete;
+            :Confirm deletion;
+            :Send request to Controller;
+            :Delete data from Database;
+        endswitch
+    else (No)
+        :Continue browsing;
+    endif
+}
+
+partition UserFiles {
+    :User uploads file;
+    :Send file to Controller;
+    :Save file details in Database;
+
+    :User requests file download;
+    :Fetch file path from Database;
+    :Provide download link;
+}
+
+partition Admin {
+    :Admin logs in;
+    :Admin views dashboard;
+    if (Perform moderation?) then (Yes)
+        :Admin selects user/note to delete;
+        :Send delete request to Controller;
+        :Delete data from Database;
+    else (No)
+        :Admin monitors activity;
+    endif
+}
+
+stop
+@enduml

@@ -18,14 +18,17 @@ class NoteController extends Controller
     
         if ($tag) {
             // Filter catatan berdasarkan tag
-            $notes = Note::where('user_id', auth()->id())
+            $notes = Note::with('tags') // Muat relasi 'tags'
+                ->where('user_id', auth()->id())
                 ->whereHas('tags', function ($query) use ($tag) {
                     $query->where('name', 'like', '%' . $tag . '%');
                 })
                 ->paginate(10);
         } else {
             // Tampilkan semua catatan milik user jika tidak ada filter
-            $notes = Note::where('user_id', auth()->id())->paginate(10);
+            $notes = Note::with('tags') // Muat relasi 'tags'
+                ->where('user_id', auth()->id())
+                ->paginate(10);
         }
     
         return view('notes.index', compact('notes', 'tag'));
@@ -94,24 +97,40 @@ class NoteController extends Controller
 
     public function update(Request $request, Note $note)
     {
-        // Validasi request jika diperlukan
+        // Validasi request
         $request->validate([
             'title' => 'required',
             'content' => 'required',
             'file' => 'nullable|file|max:2048',
+            'tags' => 'nullable|string', // Validasi tags
         ]);
     
         // Update data catatan
         $note->update($request->only(['title', 'content']));
     
-        // Periksa apakah ada file baru yang diupload
+        // Proses dan sinkronisasi tag
+        if ($request->has('tags')) {
+            // Pisahkan tag yang dimasukkan menggunakan koma
+            $tags = explode(',', $request->tags); 
+    
+            // Trim untuk menghapus spasi ekstra
+            $tags = array_map('trim', $tags);
+    
+            // Sinkronkan tags (atau dapat menggunakan create atau attach jika Anda membuat tags baru)
+            $tagIds = Tag::whereIn('name', $tags)->pluck('id'); // Ambil ID tag yang sudah ada di database
+    
+            // Sinkronkan tag ke note
+            $note->tags()->sync($tagIds);
+        }
+    
+        // Periksa apakah ada file yang diupload
         if ($request->hasFile('file')) {
             // Hapus file lama jika ada
             if ($note->file_path && Storage::exists($note->file_path)) {
                 Storage::delete($note->file_path);
             }
     
-            // Simpan file baru di disk 'public'
+            // Simpan file baru
             $filePath = $request->file('file')->store('files', 'public');
             $note->file_path = $filePath;
             $note->save();
@@ -119,9 +138,9 @@ class NoteController extends Controller
     
         // Kembalikan ke halaman indeks dengan pesan sukses
         session()->flash('message', 'Note updated successfully.');
-    
         return redirect()->route('notes.index');
-    }    
+    }
+    
     
     public function destroy(Note $note)
     {
@@ -145,5 +164,9 @@ class NoteController extends Controller
         \Log::info('Notes found: ', $notes->toArray());
         return view('notes.index', compact('notes'));
     }
-    
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 }

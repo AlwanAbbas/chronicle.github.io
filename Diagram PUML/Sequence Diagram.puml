@@ -1,0 +1,62 @@
+@startuml Chronicle
+title Sequence Diagram: Chronicle Application
+
+actor User
+actor Admin
+
+boundary WebApp as "Application Interface"
+control Controller as "Controller"
+entity Database as "Database"
+
+' --- Login Sequence ---
+User -> WebApp : Input email & password
+WebApp -> Controller : send login request
+Controller -> Database : Verify credentials
+Database --> Controller : Credentials valid
+Controller --> WebApp : Login success
+WebApp -> User : Redirect to Dashboard
+
+' --- CRUD Notes ---
+User -> WebApp : Create Note
+WebApp -> Controller : Send note data
+Controller -> Database : Insert Note data
+Database --> Controller : Note created
+Controller --> WebApp : Note creation success
+WebApp -> User : Show new note
+
+User -> WebApp : Edit Note
+WebApp -> Controller : Update Note data
+Controller -> Database : Update note entry
+Database --> Controller : Note updated
+Controller --> WebApp : Note update success
+
+User -> WebApp : Delete Note
+WebApp -> Controller : Delete Note request
+Controller -> Database : Remove Note entry
+Database --> Controller : Note deleted
+Controller --> WebApp : Note deletion success
+
+' --- File Upload/Download ---
+User -> WebApp : Upload File
+WebApp -> Controller : Send file to server
+Controller -> Database : Save file data
+Database --> Controller : File uploaded
+Controller --> WebApp : File upload success
+WebApp -> User : Display file in dashboard
+
+User -> WebApp : Download File
+WebApp -> Controller : Request file data
+Controller -> Database : Fetch file path
+Database --> Controller : File data retrieved
+Controller --> WebApp : File ready to download
+WebApp -> User : Download file
+
+' --- Admin Moderation ---
+Admin -> WebApp : Delete User
+WebApp -> Controller : Delete user request
+Controller -> Database : Remove user data
+Database --> Controller : User deleted
+Controller --> WebApp : Deletion success
+WebApp -> Admin : Notify admin
+
+@enduml

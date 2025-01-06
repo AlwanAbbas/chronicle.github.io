@@ -1,0 +1,39 @@
+@startuml Chronicle
+
+!define RECTANGLE #EEEEEE
+skinparam packageBackgroundColor RECTANGLE
+skinparam defaultFontName Arial
+
+title Use Case Diagram: Chronicle
+
+actor "Admin" as Admin
+actor "User" as User
+
+rectangle Chronicle {
+    usecase "Register" as UC_Register
+    usecase "Login" as UC_Login
+    usecase "Logout" as UC_Logout
+    usecase "Buat Catatan" as UC_CreateNote
+    usecase "Edit Catatan" as UC_EditNote
+    usecase "Hapus Catatan" as UC_DeleteNote
+    usecase "Lihat Daftar Catatan" as UC_ViewNotes
+    usecase "Download File" as UC_DownloadFile
+    usecase "Upload File" as UC_UploadFile
+    usecase "Atur Profil" as UC_ManageProfile
+}
+
+User --> UC_Register
+User --> UC_Login
+User --> UC_Logout
+User --> UC_CreateNote
+User --> UC_EditNote
+User --> UC_DeleteNote
+User --> UC_ViewNotes
+User --> UC_DownloadFile
+User --> UC_UploadFile
+User --> UC_ManageProfile
+
+Admin --> UC_ViewNotes
+Admin --> UC_DeleteNote
+
+@enduml

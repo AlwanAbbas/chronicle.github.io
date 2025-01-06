@@ -1,0 +1,75 @@
+@startuml Chronicle
+title Class Diagram: Chronicle System
+
+class User {
+  + id: int
+  + name: string
+  + email: string
+  + password: string
+  + created_at: datetime
+  + updated_at: datetime
+  ---
+  + register(): bool
+  + login(email: string, password: string): bool
+  + logout(): void
+}
+
+class Note {
+  + id: int
+  + user_id: int
+  + title: string
+  + content: text
+  + category: string
+  + created_at: datetime
+  + updated_at: datetime
+  ---
+  + createNote(): Note
+  + editNote(): bool
+  + deleteNote(): bool
+  + viewNote(): Note
+}
+
+class File {
+  + id: int
+  + user_id: int
+  + file_name: string
+  + file_type: string
+  + file_size: float
+  + file_path: string
+  + created_at: datetime
+  + updated_at: datetime
+  ---
+  + uploadFile(file: File): bool
+  + downloadFile(file_id: int): File
+}
+
+class Admin {
+  + id: int
+  + name: string
+  + email: string
+  + password: string
+  + created_at: datetime
+  + updated_at: datetime
+  ---
+  + deleteUser(user_id: int): bool
+  + deleteNote(note_id: int): bool
+  + viewAllUsers(): List<User>
+}
+
+class Profile {
+  + id: int
+  + user_id: int
+  + bio: text
+  + profile_picture: string
+  + social_links: string
+  ---
+  + manageProfile(): bool
+}
+
+User "1" -- "many" Note: owns >
+User "1" -- "many" File: manages >
+User "1" -- "1" Profile: updates >
+Admin "1" -- "many" Note: moderates >
+Admin "1" -- "many" User: manages >
+
+@enduml

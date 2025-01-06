@@ -1,4 +1,9 @@
 <x-guest-layout>
+    <!-- Sign In Title -->
+    <div class="text-center text-2xl font-bold mb-6">
+        {{ __('Sign In') }}
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

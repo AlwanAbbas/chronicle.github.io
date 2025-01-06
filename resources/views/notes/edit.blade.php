@@ -18,24 +18,24 @@
             <!-- Input Judul -->
             <div class="form-group">
                 <label>Title:</label>
-                <input type="text" name="title" class="form-control" value="{{ $note->title }}" required>
+                <input type="text" name="title" class="form-control" value="{{ old('title', $note->title) }}" required>
             </div>
             
             <!-- Input Konten -->
             <div class="form-group">
                 <label>Content:</label>
-                <textarea name="content" class="form-control" required>{{ $note->content }}</textarea>
+                <textarea name="content" class="form-control" required>{{ old('content', $note->content) }}</textarea>
             </div>
             
             <!-- Input Tags -->
             <div class="form-group">
                 <label>Tags:</label>
-                <input type="text" name="tags" class="form-control" placeholder="Enter tags, separated by commas" value="{{ implode(',', $note->tags->pluck('name')->toArray()) }}">
+                <input type="text" name="tags" class="form-control" placeholder="Enter tags, separated by commas" value="{{ old('tags', implode(',', $note->tags->pluck('name')->toArray())) }}">
             </div>
             
             <!-- Input File -->
             <div class="form-group">
-                <label>File:</label>
+                <label>File (optional):</label>
                 <input type="file" name="file" class="form-control">
             </div>
             
